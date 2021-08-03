@@ -1,24 +1,26 @@
 const express = require('express');
-const connection = require('../connection');
+const Category = require('../models/category');
 
 const router = express.Router();
 
 router.get('/', (req, res) => {
-  connection
-    .promise()
-    .query(`SELECT * FROM category`)
-    .then(([result]) => {
-      res.json(result);
-    })
+  Category
+    .findAll()
+    .then(categories => {
+      res.json(categories);
+    });
 });
 
 router.get('/:id', (req, res) => {
-  connection
-    .promise()
-    .query(`SELECT * FROM category c JOIN flux f ON c.id = f.category_id WHERE c.id = ?`, [req.params.id])
-    .then(([result]) => {
-      res.json(result);
-    })
+  Category
+  .findOne(req.params.id)
+  .then(categories => {
+    if (categories.length === 0) {
+      res.status(404).json(categories);
+    } else {
+      res.json(categories);
+    }
+  });
 });
 
 module.exports = router;
