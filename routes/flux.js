@@ -22,7 +22,7 @@ router.get('/:id', (req, res) => {
 
 router.get('/', (req, res) => {
   Flux
-  .findAll(req.query.search)
+  .findAll(req.query)
   .then(flux => {
     res.status(200).json(flux);
   });
