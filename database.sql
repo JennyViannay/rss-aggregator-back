@@ -42,8 +42,7 @@ INSERT INTO flux (title, url, category_id) VALUES
     ('futura-sciences','https://www.futura-sciences.com/rss/actualites.xml',2),
     ('Eleven Labs','https://blog.eleven-labs.com/feed.xml',3),
     ('Je suis un dev','https://www.jesuisundev.com/feed/',3),
-    ('Developpez.com','https://www.developpez.com/index/rss',3),
-    ('Lemondeinformatique','https://www.lemondeinformatique.fr/flux-rss/thematique/toutes-les-actualites/rss.xml',3)
+    ('Developpez.com','https://www.developpez.com/index/rss',3)
 ;
 
 INSERT INTO user (email, password, fullname) VALUES
