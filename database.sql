@@ -20,7 +20,9 @@ CREATE TABLE user (
     id INTEGER PRIMARY KEY AUTO_INCREMENT,
     email VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL,
-    fullname VARCHAR(255) NOT NULL
+    fullname VARCHAR(255) NOT NULL,
+    token VARCHAR(255),
+    token_expiration DATETIME
 );
 
 CREATE TABLE favorite (
@@ -45,8 +47,8 @@ INSERT INTO flux (title, url, category_id) VALUES
     ('Developpez.com','https://www.developpez.com/index/rss',3)
 ;
 
-INSERT INTO user (email, password, fullname) VALUES
-    ('francois@email.fr', 'password', 'Francois Doussin')
+INSERT INTO user (email, password, fullname, token, token_expiration) VALUES
+    ('francois@email.fr', '$argon2i$v=19$m=4096,t=3,p=1$P/vLAIfYFTHyDNIRfKpYIw$QyrKk/G62ztaL52u4rBSauqF2i/G8/d7A0qIOnWehVo', 'Francois Doussin', null, null)
 ;
 
 INSERT INTO favorite (flux_id, user_id) VALUES
