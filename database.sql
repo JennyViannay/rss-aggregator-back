@@ -34,7 +34,8 @@ CREATE TABLE favorite (
 INSERT INTO category (name) VALUES 
     ('Actus'),
     ('Tech'),
-    ('Developpment')
+    ('Developpment'),
+    ('Shopping')
 ;
 
 INSERT INTO flux (title, url, category_id) VALUES
@@ -44,7 +45,8 @@ INSERT INTO flux (title, url, category_id) VALUES
     ('futura-sciences','https://www.futura-sciences.com/rss/actualites.xml',2),
     ('Eleven Labs','https://blog.eleven-labs.com/feed.xml',3),
     ('Je suis un dev','https://www.jesuisundev.com/feed/',3),
-    ('Developpez.com','https://www.developpez.com/index/rss',3)
+    ('Developpez.com','https://www.developpez.com/index/rss',3),
+    ('Dealabs Hot','https://www.dealabs.com/rss/hot',4)
 ;
 
 INSERT INTO user (email, password, fullname, token, token_expiration) VALUES
