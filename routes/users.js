@@ -1,45 +1,70 @@
 const express = require('express');
 const argon2 = require('argon2');
-const { findOneByEmailAndPassword, createToken, findOneByToken } = require('../models/users');
+const { PrismaClient } = require('@prisma/client');
+const { v4: uuidv4 } = require('uuid');
+
+const prisma = new PrismaClient()
 
 const router = express.Router();
 
 router.post('/login', (req, res) => {
   if (req.body && req.body.email && req.body.password) {
-    findOneByEmailAndPassword(req.body.email)
-    .then(user => {
-      const dbUser = user[0];
-      if (dbUser) {
-        argon2.verify(dbUser.password, req.body.password).then(isValid => {
-          if (isValid) {
-            createToken(dbUser.id).then(({token, token_expiration}) => {
+    prisma.user
+      .findUnique({
+        where : {
+          email : req.body.email,
+        }
+      })
+      .then(user => {
+        if (user) {
+          argon2.verify(user.password, req.body.password).then(isValid => {
+            if (isValid) {
+              const date = new Date();
+              date.setHours(date.getHours() + 1);
+              const token = uuidv4();
+              prisma.user
+                .update({
+                  where : {
+                    id : user.id,
+                  },
+                  data : {
+                    token : token,
+                    token_expiration: date,
+                  }
+                })
+                .then(({token, token_expiration}) => {
+                  res.json({
+                    success: true,
+                    user: {
+                      ...user,
+                      token,
+                      token_expiration,
+                      password: 'hidden',
+                    }
+                  });
+                });
+            } else {
               res.json({
-                success: true,
-                user: {
-                  ...dbUser,
-                  token,
-                  token_expiration,
-                  password: 'hidden',
-                }
+                success: false,
+                message: 'Invalid email or password'
               });
-            });
-          } else {
-            res.json({
-              success: false,
-              message: 'Invalid email or password'
-            });
-          }
-        });
-      } else {
-        return res.json({
-          success: false,
-          message: 'Invalid email or password'
-        });
-      }
-    })
-    .catch(err => {
-      console.log(err);
-    })
+            }
+          });
+        } else {
+          return res.json({
+            success: false,
+            message: 'Invalid email or password'
+          });
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      })
+  } else {
+    return res.json({
+      success: false,
+      message: 'Please add email and password'
+    });
   }
 });
 

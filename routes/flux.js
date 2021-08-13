@@ -1,31 +1,46 @@
 const axios = require('axios');
 const express = require('express');
 const parser = require('fast-xml-parser');
-const Flux = require('../models/flux');
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient()
 
 const router = express.Router();
 
 router.get('/:id', (req, res) => {
-  Flux
-  .findOne(req.params.id)
-  .then(flux => {
-    if (flux.length === 0) {
-      res.status(404).json({});
-    } else {
-      axios.get(flux[0].url)
+  prisma.flux
+    .findUnique({
+      where : {
+        id : parseInt(req.params.id),
+      }
+    })
+    .then(flux => {
+      if (!flux) {
+        res.status(404).json({});
+      } else {
+        axios.get(flux.url)
         .then((response) => {
           res.json(parser.parse(response.data));
         });
-    }
-  });
+      }
+    });
 });
 
 router.get('/', (req, res) => {
-  Flux
-  .findAll(req.query)
-  .then(flux => {
-    res.status(200).json(flux);
-  });
+  const ids = req.query.ids && req.query.ids.split(',').map(x=>+x)
+  prisma.flux
+    .findMany({
+      where: {
+        id : {
+          in : ids
+        },
+        title : {
+          contains: req.query.search
+        }
+      }
+    })
+    .then(flux => {
+      res.status(200).json(flux)
+    });
 });
 
 module.exports = router;

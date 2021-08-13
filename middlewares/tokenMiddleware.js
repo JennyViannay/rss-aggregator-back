@@ -1,10 +1,16 @@
-const { findOneByToken } = require('../models/users');
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient()
 
 const tokenMiddleware = (req, res, next) => {
   if (req.headers.authorization) {
-    findOneByToken(req.headers.authorization).then(user => {
-      const dbUser = user[0];
-      if (dbUser && dbUser.token === req.headers.authorization && dbUser.token_expiration > Date.now()) {
+    prisma.user
+    .findUnique({
+      where : {
+        token : req.headers.authorization,
+      },
+    })
+      .then(user => {
+      if (user && user.token === req.headers.authorization && user.token_expiration > Date.now()) {
         next();
       } else {
         res.status(401).send({

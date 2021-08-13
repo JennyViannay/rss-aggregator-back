@@ -1,26 +1,41 @@
 const express = require('express');
-const Category = require('../models/category');
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient()
 
 const router = express.Router();
 
 router.get('/', (req, res) => {
-  Category
-    .findAll()
+  prisma.category
+    .findMany()
     .then(categories => {
       res.json(categories);
     });
 });
 
 router.get('/:id', (req, res) => {
-  Category
-  .findOne(req.params.id)
-  .then(categories => {
-    if (categories.length === 0) {
-      res.status(404).json(categories);
-    } else {
-      res.json(categories);
-    }
-  });
+  prisma.category
+    .findUnique({
+      where : {
+        id : parseInt(req.params.id),
+      },
+      select : {
+        id : true,
+        name : true,
+        flux: {
+          select: {
+            id: true,
+            title: true
+          }
+        }
+      }
+    })
+    .then(categories => {
+      if (!categories) {
+        res.status(404).json(categories);
+      } else {
+        res.json(categories);
+      }
+    });
 });
 
 module.exports = router;

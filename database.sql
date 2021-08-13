@@ -18,10 +18,10 @@ CREATE TABLE flux (
 
 CREATE TABLE user (
     id INTEGER PRIMARY KEY AUTO_INCREMENT,
-    email VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     fullname VARCHAR(255) NOT NULL,
-    token VARCHAR(255),
+    token VARCHAR(255) UNIQUE,
     token_expiration DATETIME
 );
 
